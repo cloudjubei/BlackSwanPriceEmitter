@@ -15,7 +15,7 @@ async function bootstrap()
     swaggerGenerate(document)
     SwaggerModule.setup('swagger-ui', app, document)
 
-    await app.listen(process.env.PORT)
+    await app.listen(process.env.PORT ?? 3001)
 }
 
 bootstrap()
