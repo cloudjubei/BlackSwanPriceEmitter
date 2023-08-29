@@ -26,12 +26,12 @@ export class PriceCoreService
 
     getLatestPrice(tokenPair: string) : string | undefined
     {
-        return this.cache[tokenPair]?.price
+        return this.getLatest(tokenPair)?.price
     }
 
     getLatestTime(tokenPair: string) : number | undefined
     {
-        return this.cache[tokenPair]?.timestamp
+        return this.getLatest(tokenPair)?.timestamp
     }
 
     //TODO:

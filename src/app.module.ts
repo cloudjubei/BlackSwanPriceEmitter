@@ -6,7 +6,6 @@ import { AppController } from './app.controller'
 import { PriceModule } from './logic/price/price.module'
 import { WebsocketsModule } from './logic/websockets/websockets.module'
 import { IdentityModule } from './logic/identity/identity.module'
-import { SignalModule } from './logic/signal/signal.module'
 
 @Module({
     imports: [
@@ -16,7 +15,6 @@ import { SignalModule } from './logic/signal/signal.module'
 
         IdentityModule,
         PriceModule,
-        // SignalModule,
         
         ScheduleModule.forRoot()
     ],
