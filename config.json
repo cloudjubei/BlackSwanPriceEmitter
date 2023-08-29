@@ -1,0 +1,11 @@
+{
+    "type" : "price",
+    "tokens" : [
+        "BTCTUSD"
+    ],
+    "intervals" : [
+        "1s",
+        "1m",
+        "1d"
+    ]
+}

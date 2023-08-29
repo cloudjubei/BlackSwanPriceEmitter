@@ -1,0 +1,42 @@
+[
+    {
+        "id" : "test1",
+        "status" : "INITIAL",
+        "config" : {
+            "tokenPair": "BTCTUSD",
+            "updateInterval": "1s",
+
+            "terminationPercentageLoss": 0.15,
+            "takeProfit": {
+                "percentage": 0.05,
+                "trailingStop": {
+                    "deltaPercentage": 0.02,
+                    "hardLimitPercentage": 0.1
+                }
+            },
+            "stopLoss": {
+                "percentage": 0.05
+            },
+            "signals": [
+                {
+                    "identifier": "linear-regression",
+                    "excitation": 0.1
+                }
+            ]
+        },
+        "startingFirstAmount" : "0",
+        "startingSecondAmount" : "1000",
+        "firstAmount" : "0",
+        "secondAmount" : "1000",
+
+        "lastUpdate" : 0,
+        "currentPriceAmount": "0",
+        "lowestPriceAmount": "99999999999",
+        "highestPriceAmount": "0",
+
+        "tradeLowestPriceAmount": "99999999999",
+        "tradeHighestPriceAmount": "0",
+
+        "transactions": []
+    }
+]
