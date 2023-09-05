@@ -42,10 +42,8 @@ export class PriceService implements OnApplicationBootstrap
         if (!this.hasSetup) { return }
 
         const tokens = this.identityService.getTokens()
-        console.log('SERVING TOKENS: ', tokens)
         for(const tokenPair of tokens){
             const tokenPriceTime = await this.mineService.getPrice(tokenPair)
-            console.log(tokenPriceTime)
             this.priceCoreService.storeInCache(tokenPriceTime)
 
             await this.wsPriceService.sendUpdate(tokenPriceTime.tokenPair, tokenPriceTime.price)

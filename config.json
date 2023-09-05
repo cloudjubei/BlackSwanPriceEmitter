@@ -1,6 +1,7 @@
 {
     "type" : "price",
     "tokens" : [
+        "BTCBUSD",
         "BTCTUSD"
     ],
     "intervals" : [
