@@ -23,8 +23,12 @@ export class PriceMineBinanceService
         const params = {
             symbol
         }
-        const response = await axios.get(PriceMineBinanceService.API_URL_PRICE, { params })
-        return this.processTicker(response.data)
+        try{
+            const response = await axios.get(PriceMineBinanceService.API_URL_PRICE, { params })
+            return this.processTicker(response.data)
+        }catch(error){
+            console.log(error)
+        }
     }
 
     getIntervalTime(interval: string, multiplier: number = 1) : number

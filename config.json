@@ -1,8 +1,8 @@
 {
     "type" : "price",
+    "identifier": "binance_price",
     "tokens" : [
-        "BTCBUSD",
-        "BTCTUSD"
+        "BTCUSDT"
     ],
     "intervals" : [
         "1s",
