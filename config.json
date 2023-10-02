@@ -2,7 +2,8 @@
     "type" : "price",
     "identifier": "binance_price",
     "tokens" : [
-        "BTCUSDT"
+        "BTCUSDT",
+        "BTCFDUSD"
     ],
     "intervals" : [
         "1s",
