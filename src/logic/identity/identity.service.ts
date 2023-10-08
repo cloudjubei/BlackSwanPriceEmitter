@@ -17,19 +17,4 @@ export class IdentityService
     {
         return this.config
     }
-
-    getType() : string
-    {
-        return this.config.type
-    }
-
-    getTokens() : string[]
-    {
-        return this.config.tokens
-    }
-
-    getIntervals() : string[]
-    {
-        return this.config.intervals
-    }
 }

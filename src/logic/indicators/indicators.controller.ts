@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Req, UseGuards, Post, Body, Query } from '@nestjs/common'
+import { Controller, Get, Param } from '@nestjs/common'
 import { ApiTags } from "@nestjs/swagger"
 import { IndicatorsService } from './inidicators.service'
 import TokenIndicatorsModel from 'src/models/indicators/TokenIndicatorsModel.dto'
@@ -12,7 +12,13 @@ export class IndicatorsController
     @Get('latest/:tokenPair')
     async getLatest(@Param('tokenPair') tokenPair: string) : Promise<TokenIndicatorsModel>
     {
-        return await this.indicatorsService.getLatest(tokenPair)
+        return await this.indicatorsService.getLatest(tokenPair, '1s')
+    }
+
+    @Get('latest/:tokenPair/:interval')
+    async getLatestInterval(@Param('tokenPair') tokenPair: string, @Param('interval') interval: string) : Promise<TokenIndicatorsModel>
+    {
+        return await this.indicatorsService.getLatest(tokenPair, interval)
     }
 
     // @Get('timeframe/:tokenPair/:startDate/:endDate')

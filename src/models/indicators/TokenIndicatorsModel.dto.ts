@@ -4,6 +4,7 @@ import { Timestamp } from "../swagger.consts"
 export default class TokenIndicatorsModel
 {
     @ApiProperty() tokenPair: string
+    @ApiProperty() interval: string
     @ApiProperty() price: string
     @ApiProperty(Timestamp) timestamp: number
 
@@ -35,9 +36,10 @@ export default class TokenIndicatorsModel
     @ApiProperty() bollinger20High: string
     @ApiProperty() bollinger20Low: string
 
-    constructor(tokenPair: string, price: string, timestamp: number, rsi9: string, rsi11: string, rsi14: string, rsi20: string, rsi30: string, williams14: string, williams30: string, ema12: string, ema20: string, ema26: string, ema50: string, ema200: string, macdLine: string, macdSignal9: string, macd9: string, bollinger20Mid: string, bollinger20SD: string, bollinger20High: string, bollinger20Low: string)
+    constructor(tokenPair: string, interval: string, price: string, timestamp: number, rsi9: string, rsi11: string, rsi14: string, rsi20: string, rsi30: string, williams14: string, williams30: string, ema12: string, ema20: string, ema26: string, ema50: string, ema200: string, macdLine: string, macdSignal9: string, macd9: string, bollinger20Mid: string, bollinger20SD: string, bollinger20High: string, bollinger20Low: string)
     {
         this.tokenPair = tokenPair
+        this.interval = interval
         this.price = price
         this.timestamp = timestamp
 

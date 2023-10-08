@@ -14,22 +14,4 @@ export class IdentityController
     {
         return await this.identityService.getConfig()
     }
-    
-    @Get('type')
-    async getType() : Promise<string>
-    {
-        return await this.identityService.getType()
-    }
-
-    @Get('tokens')
-    async getTokens() : Promise<string[]>
-    {
-        return await this.identityService.getTokens()
-    }
-
-    @Get('intervals')
-    async getIntervals() : Promise<string[]>
-    {
-        return await this.identityService.getIntervals()
-    }
 }

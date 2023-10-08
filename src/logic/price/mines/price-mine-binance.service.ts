@@ -14,9 +14,12 @@ export class PriceMineBinanceService
     static INTERVALS = {
         "1s": PriceMineBinanceService.INTERVAL_1S,
         "1m": PriceMineBinanceService.INTERVAL_1S * 60,
+        "5m": PriceMineBinanceService.INTERVAL_1S * 60 * 5,
+        "15m": PriceMineBinanceService.INTERVAL_1S * 60 * 15,
         "1h": PriceMineBinanceService.INTERVAL_1S * 60 * 60,
         "1d": PriceMineBinanceService.INTERVAL_1S * 60 * 60 * 24
     }
+    // 1s, 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
 
     async getPrice(symbol: string) : Promise<TokenPriceTimeModel>
     {
@@ -36,6 +39,18 @@ export class PriceMineBinanceService
         return PriceMineBinanceService.INTERVALS[interval] * multiplier
     }
 
+    async getMostRecentKline(symbol: string, interval: string) : Promise<PriceKlineModel>
+    {
+        const params = {
+            symbol,
+            interval,
+            limit: 1
+        }
+        const response = await axios.get(PriceMineBinanceService.API_URL, { params })
+        const klines = this.processKlines(symbol, interval, response.data)
+        return klines[0]
+    }
+
     async getTimeSeriesData(symbol: string, interval: string, startTime: number, endTime: number, limit: number = 1000) : Promise<PriceKlineModel[]>
     {
         const params = {
@@ -46,7 +61,7 @@ export class PriceMineBinanceService
             limit
         }
         const response = await axios.get(PriceMineBinanceService.API_URL, { params })
-        const klines = this.processKlines(response.data)
+        const klines = this.processKlines(symbol, interval, response.data)
         return klines
     }
 
@@ -59,11 +74,13 @@ export class PriceMineBinanceService
         } as TokenPriceTimeModel
     }
 
-    private processKlines(json: any) : PriceKlineModel[]
+    private processKlines(tokenPair: string, interval: string, json: any) : PriceKlineModel[]
     {
         const klines : PriceKlineModel[] = []
-        for (const vals in json){
+        for (const vals of json){
             klines.push({
+                tokenPair,
+                interval,
                 timestamp_open: vals[0],
                 price_open: vals[1],
                 price_high: vals[2],

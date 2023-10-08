@@ -12,4 +12,9 @@ export class WSIndicatorsService
         // console.log(`WS INDICATORS of ${tokenPair} : ${JSON.stringify(indicators)}`)
         this.websocketsService.sendMessage('indicators-' + tokenPair, indicators)
     }
+    async sendIntervalUpdate(tokenPair: string, interval: string, indicators: TokenIndicatorsModel)
+    {
+        // console.log(`WS INDICATORS of ${tokenPair} : ${JSON.stringify(indicators)}`)
+        this.websocketsService.sendMessage('indicators-' + tokenPair + '-' + interval, indicators)
+    }
 }

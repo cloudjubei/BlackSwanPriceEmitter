@@ -1,5 +1,5 @@
-import { Controller, Get, Param, Req, UseGuards, Post, Body, Query } from '@nestjs/common'
-import { ApiQuery, ApiTags } from "@nestjs/swagger"
+import { Controller, Get, Param } from '@nestjs/common'
+import { ApiTags } from "@nestjs/swagger"
 import { PriceCoreService } from './price-core.service'
 import PriceKlineModel from 'src/models/price/PriceKlineModel.dto'
 import TokenPriceTimeModel from 'src/models/price/TokenPriceTimeModel.dto'
@@ -13,7 +13,13 @@ export class PriceCoreController
     @Get('latest/:tokenPair')
     async getLatest(@Param('tokenPair') tokenPair: string) : Promise<TokenPriceTimeModel>
     {
-        return await this.priceCoreService.getLatest(tokenPair)
+        return await this.priceCoreService.getLatestPrice(tokenPair)
+    }
+
+    @Get('latestKline/:tokenPair/:interval')
+    async getLatestKline(@Param('tokenPair') tokenPair: string, @Param('interval') interval: string) : Promise<PriceKlineModel>
+    {
+        return await this.priceCoreService.getLatest(tokenPair, interval)
     }
 
     // @Get('timeframe/:tokenPair/:startDate/:endDate')

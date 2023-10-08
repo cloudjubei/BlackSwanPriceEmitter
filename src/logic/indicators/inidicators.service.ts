@@ -1,71 +1,73 @@
 import { Injectable } from "@nestjs/common";
 import TokenIndicatorsModel from "src/models/indicators/TokenIndicatorsModel.dto";
+import PriceKlineModel from "src/models/price/PriceKlineModel.dto";
 import TokenPriceTimeModel from "src/models/price/TokenPriceTimeModel.dto";
 
 @Injectable()
 export class IndicatorsService
 {
-    private cache : { [key:string] : TokenIndicatorsModel[] } = {}
+    private cache : { [key:string] : { [interval:string] : TokenIndicatorsModel[] }} = {}
     private cacheSize = 201
 
-    setupCache(tokens: string[])
+    setupCache(tokens: string[], intervals: string[])
     {
         for(const token of tokens){
-            this.cache[token] = []
+            this.cache[token] = {}
+            for(const interval of intervals){
+                this.cache[token][interval] = []
+            }
+        }
+    }
+    storeInCache(tokenPair: string, interval: string, allKlines: PriceKlineModel[])
+    {
+        const indicators = this.processPrice(tokenPair, interval, allKlines.map(p => parseFloat(p.price_close)).reverse(), this.getAll(tokenPair, interval).reverse())
+
+        this.cache[tokenPair][interval] = [indicators, ...this.cache[tokenPair][interval]]
+        if (this.cache[tokenPair][interval].length > this.cacheSize){
+            this.cache[tokenPair][interval].pop()
         }
     }
 
-    storeInCache(tokenPair: string, allPrices: TokenPriceTimeModel[])
+    getAll(tokenPair: string, interval: string) : TokenIndicatorsModel[]
     {
-        const indicators = this.processPrice(allPrices, this.getAll(tokenPair).reverse())
-        this.cache[tokenPair] = [indicators, ...this.cache[tokenPair]]
-        if (this.cache[tokenPair].length > this.cacheSize){
-            this.cache[tokenPair].pop()
-        }
+        return this.cache[tokenPair][interval] ?? []
     }
 
-    getAll(tokenPair: string) : TokenIndicatorsModel[]
+    getLatest(tokenPair: string, interval: string = '1s') : TokenIndicatorsModel
     {
-        return this.cache[tokenPair] ?? []
-    }
-
-    getLatest(tokenPair: string) : TokenIndicatorsModel
-    {
-        const indicators = this.cache[tokenPair]
+        const indicators = this.cache[tokenPair][interval]
         if (indicators.length > 0){
             return indicators[0]
         }
-        return new TokenIndicatorsModel(tokenPair, '0', Date.now(), '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')
+        return new TokenIndicatorsModel(tokenPair, '1s', '0', Date.now(), '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')
     }
 
-    private processPrice(prices: TokenPriceTimeModel[], indicators: TokenIndicatorsModel[]) : TokenIndicatorsModel
+    private processPrice(tokenPair: string, interval: string, prices: number[], indicators: TokenIndicatorsModel[]) : TokenIndicatorsModel
     {
-        const numericPrices: number[] = prices.map(p => parseFloat(p.price)).reverse()
+        const rsi9 = this.calculateRSI(prices, 9)
+        const rsi11 = this.calculateRSI(prices, 11)
+        const rsi14 = this.calculateRSI(prices, 14)
+        const rsi20 = this.calculateRSI(prices, 20)
+        const rsi30 = this.calculateRSI(prices, 30)
 
-        const rsi9 = this.calculateRSI(numericPrices, 9)
-        const rsi11 = this.calculateRSI(numericPrices, 11)
-        const rsi14 = this.calculateRSI(numericPrices, 14)
-        const rsi20 = this.calculateRSI(numericPrices, 20)
-        const rsi30 = this.calculateRSI(numericPrices, 30)
-
-        const williams14 = this.calculateWilliams(numericPrices, 14)
-        const williams30 = this.calculateWilliams(numericPrices, 30)
+        const williams14 = this.calculateWilliams(prices, 14)
+        const williams30 = this.calculateWilliams(prices, 30)
 
         // calculateSAR
 
-        const ema12 = this.calculateEMA(numericPrices, 12)
-        const ema20 = this.calculateEMA(numericPrices, 20)
-        const ema26 = this.calculateEMA(numericPrices, 26)
-        const ema50 = this.calculateEMA(numericPrices, 50)
-        const ema200 = this.calculateEMA(numericPrices, 200)
+        const ema12 = this.calculateEMA(prices, 12)
+        const ema20 = this.calculateEMA(prices, 20)
+        const ema26 = this.calculateEMA(prices, 26)
+        const ema50 = this.calculateEMA(prices, 50)
+        const ema200 = this.calculateEMA(prices, 200)
 
         const macdLine = this.calculateMACDLine(ema12, ema26)
         const macdSignal9 = this.calculateMACDSignal(macdLine, indicators.map(i => i.macdLine), 9)
         const macd9 = '' + (parseFloat(macdLine) - parseFloat(macdSignal9)).toFixed(8)
 
-        const bollinger20 = this.calculateBollinger(numericPrices, 20)
+        const bollinger20 = this.calculateBollinger(prices, 20)
 
-        return new TokenIndicatorsModel(prices[0].tokenPair, prices[0].price, Date.now(), rsi9, rsi11, rsi14, rsi20, rsi30, williams14, williams30, ema12, ema20, ema26, ema50, ema200, macdLine, macdSignal9, macd9, bollinger20.middle, bollinger20.sd, bollinger20.high, bollinger20.low)
+        return new TokenIndicatorsModel(tokenPair, interval, '' + prices[0], Date.now(), rsi9, rsi11, rsi14, rsi20, rsi30, williams14, williams30, ema12, ema20, ema26, ema50, ema200, macdLine, macdSignal9, macd9, bollinger20.middle, bollinger20.sd, bollinger20.high, bollinger20.low)
     }
 
     private calculateRSI(prices: number[], period: number) : string

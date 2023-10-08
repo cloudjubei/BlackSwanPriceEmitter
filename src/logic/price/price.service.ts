@@ -33,8 +33,8 @@ export class PriceService implements OnApplicationBootstrap
 
         console.log(`PriceService setup ${Date.now()}`)
 
-        this.priceCoreService.setupCache(this.identityService.getTokens())
-        this.indicatorsService.setupCache(this.identityService.getTokens())
+        this.priceCoreService.setupCache(this.identityService.config.tokens, this.identityService.config.intervals)
+        this.indicatorsService.setupCache(this.identityService.config.tokens, this.identityService.config.intervals)
 
         this.hasSetup = true
 
@@ -46,16 +46,27 @@ export class PriceService implements OnApplicationBootstrap
     {
         if (!this.hasSetup) { return }
 
-        const tokens = this.identityService.getTokens()
+        const tokens = this.identityService.config.tokens
         for(const tokenPair of tokens){
-            const tokenPriceTime = await this.mineService.getPrice(tokenPair)
-            this.priceCoreService.storeInCache(tokenPriceTime)
-
-            await this.wsPriceService.sendUpdate(tokenPriceTime.tokenPair, tokenPriceTime.price)
-
-            this.indicatorsService.storeInCache(tokenPair, this.priceCoreService.getAll(tokenPair))
-
-            await this.wsIndicatorsService.sendUpdate(tokenPriceTime.tokenPair, this.indicatorsService.getLatest(tokenPair))
+            for(const interval of this.identityService.config.intervals){
+                await this.updateKline(tokenPair, interval)
+            }
         }
+    }
+
+    private async updateKline(tokenPair: string, interval: string)
+    {
+        const kline = await this.mineService.getMostRecentKline(tokenPair, interval)
+        this.priceCoreService.storeInCache(kline)
+        if (interval === '1s') {
+            await this.wsPriceService.sendUpdate(tokenPair, kline.price_close)
+        }
+        await this.wsPriceService.sendKlineUpdate(tokenPair, interval, kline)
+
+        this.indicatorsService.storeInCache(tokenPair, interval, this.priceCoreService.getAll(tokenPair, interval))
+        if (interval === '1s') {
+            await this.wsIndicatorsService.sendUpdate(tokenPair, this.indicatorsService.getLatest(tokenPair, interval))
+        }
+        await this.wsIndicatorsService.sendIntervalUpdate(tokenPair, interval, this.indicatorsService.getLatest(tokenPair, interval))
     }
 }
