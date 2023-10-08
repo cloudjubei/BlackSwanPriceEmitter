@@ -61,7 +61,7 @@ export class IndicatorsService
 
         const macdLine = this.calculateMACDLine(ema12, ema26)
         const macdSignal9 = this.calculateMACDSignal(macdLine, indicators.map(i => i.macdLine), 9)
-        const macd9 = '' + (parseFloat(macdLine) - parseFloat(macdSignal9))
+        const macd9 = '' + (parseFloat(macdLine) - parseFloat(macdSignal9)).toFixed(8)
 
         const bollinger20 = this.calculateBollinger(numericPrices, 20)
 
@@ -93,7 +93,7 @@ export class IndicatorsService
         const rs = averageGain / averageLoss
         const rsi = 100 - (100 / (1 + rs))
         
-        return '' + rsi
+        return '' + rsi.toFixed(8)
     }
 
     private calculateWilliams(prices: number[], period: number) : string
@@ -108,7 +108,7 @@ export class IndicatorsService
     
         const williamsPercentR = ((highestHigh - currentPrice) / (highestHigh - lowestLow)) * -100   
       
-        return '' + williamsPercentR
+        return '' + williamsPercentR.toFixed(8)
     }
 
     private calculateSMA(prices: number[], period: number) : number
@@ -141,14 +141,14 @@ export class IndicatorsService
             const currentPrice = prices[prices.length - period + i];
             ema = (currentPrice - previousEMA) * multiplier + previousEMA
         }
-        return '' + ema
+        return '' + ema.toFixed(8)
     }
 
     private calculateMACDLine(ema12: string, ema26: string) : string
     {
         const macdLine = parseFloat(ema12) - parseFloat(ema26)
 
-        return '' + macdLine
+        return '' + macdLine.toFixed(8)
     }
 
     private calculateMACDSignal(macdLine: string, macdLines: string[], period: number) : string
@@ -169,9 +169,9 @@ export class IndicatorsService
         const middleBand = this.calculateSMA(prices, period)
         const standardDeviation = this.calculateStandardDeviation(prices, middleBand, period)
         const upperBand = middleBand + multiplier * standardDeviation
-        const lowerBand = middleBand + multiplier * standardDeviation
+        const lowerBand = middleBand - multiplier * standardDeviation
 
-        return { high: '' + upperBand, middle: '' + middleBand, low: '' + lowerBand, sd: '' + standardDeviation }  
+        return { high: '' + upperBand.toFixed(8), middle: '' + middleBand.toFixed(8), low: '' + lowerBand.toFixed(8), sd: '' + standardDeviation.toFixed(8) }  
     }
 
     private calculateStandardDeviation(prices: number[], average: number, period: number) : number

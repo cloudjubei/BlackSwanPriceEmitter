@@ -9,7 +9,7 @@ export class WSIndicatorsService
 
     async sendUpdate(tokenPair: string, indicators: TokenIndicatorsModel)
     {
-        // console.log(`WS INDICATORS of ${tokenPair} : ${JSON.stringify(indicators)}`)
+        console.log(`WS INDICATORS of ${tokenPair} : ${JSON.stringify(indicators)}`)
         this.websocketsService.sendMessage('indicators-' + tokenPair, indicators)
     }
 }
