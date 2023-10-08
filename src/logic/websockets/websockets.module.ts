@@ -4,6 +4,7 @@ import { WebsocketsGateway } from './websockets.gateway'
 import { WSPriceModule } from './price/ws-price.module'
 import { WSTimesyncModule } from './timesync/ws-timesync.module'
 import { WSIdentityModule } from './identity/ws-identity.module'
+import { WSIndicatorsModule } from './indicators/ws-indicators.module'
 
 @Module({
     imports: [
@@ -12,7 +13,8 @@ import { WSIdentityModule } from './identity/ws-identity.module'
         WSTimesyncModule,
         
         WSIdentityModule,
-        WSPriceModule
+        WSPriceModule,
+        WSIndicatorsModule
     ],
     providers: [WebsocketsGateway]
 })

@@ -4,6 +4,8 @@ import { PriceCoreService } from './core/price-core.service'
 import { WSPriceService } from '../websockets/price/ws-price.service'
 import { IdentityService } from '../identity/identity.service'
 import { PriceMineBinanceService } from './mines/price-mine-binance.service'
+import { IndicatorsService } from '../indicators/inidicators.service'
+import { WSIndicatorsService } from '../websockets/indicators/ws-indicators.service'
 
 @Injectable()
 export class PriceService implements OnApplicationBootstrap
@@ -11,7 +13,9 @@ export class PriceService implements OnApplicationBootstrap
     constructor(
         private readonly identityService: IdentityService,
         private readonly priceCoreService: PriceCoreService,
+        private readonly indicatorsService: IndicatorsService,
         private readonly wsPriceService: WSPriceService,
+        private readonly wsIndicatorsService: WSIndicatorsService,
 
         private readonly mineService: PriceMineBinanceService,
     ){}
@@ -30,6 +34,7 @@ export class PriceService implements OnApplicationBootstrap
         console.log(`PriceService setup ${Date.now()}`)
 
         this.priceCoreService.setupCache(this.identityService.getTokens())
+        this.indicatorsService.setupCache(this.identityService.getTokens())
 
         this.hasSetup = true
 
@@ -47,6 +52,10 @@ export class PriceService implements OnApplicationBootstrap
             this.priceCoreService.storeInCache(tokenPriceTime)
 
             await this.wsPriceService.sendUpdate(tokenPriceTime.tokenPair, tokenPriceTime.price)
+
+            this.indicatorsService.storeInCache(tokenPair, this.priceCoreService.getAll(tokenPair))
+
+            await this.wsIndicatorsService.sendUpdate(tokenPriceTime.tokenPair, this.indicatorsService.getLatest(tokenPair))
         }
     }
 }

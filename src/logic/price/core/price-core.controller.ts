@@ -16,21 +16,9 @@ export class PriceCoreController
         return await this.priceCoreService.getLatest(tokenPair)
     }
 
-    @Get('latestPrice/:tokenPair')
-    async getLatestPrice(@Param('tokenPair') tokenPair: string) : Promise<string>
-    {
-        return await this.priceCoreService.getLatestPrice(tokenPair)
-    }
-
-    @Get('latestTime/:tokenPair')
-    async getLatestTime(@Param('tokenPair') tokenPair: string) : Promise<number>
-    {
-        return await this.priceCoreService.getLatestTime(tokenPair)
-    }
-
-    @Get('timeframe/:tokenPair/:startDate/:endDate')
-    async getTimeframe(@Param('tokenPair') tokenPair: string, @Param('startDate') startDate: Date, @Param('endDate') endDate: Date, @Query('interval') interval: string = '1s') : Promise<PriceKlineModel[]>
-    {
-        return await this.priceCoreService.getTimeframe(tokenPair, startDate, endDate, interval)
-    }
+    // @Get('timeframe/:tokenPair/:startDate/:endDate')
+    // async getTimeframe(@Param('tokenPair') tokenPair: string, @Param('startDate') startDate: Date, @Param('endDate') endDate: Date, @Query('interval') interval: string = '1s') : Promise<PriceKlineModel[]>
+    // {
+    //     return await this.priceCoreService.getTimeframe(tokenPair, startDate, endDate, interval)
+    // }
 }

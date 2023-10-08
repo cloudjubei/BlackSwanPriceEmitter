@@ -28,30 +28,4 @@ export class WSPriceGateway
 
         return await this.priceCoreService.getLatest(tokenPair)
     }
-
-    @SubscribeMessage(MESSAGE_GET_LATEST_PRICE)
-    async getLatestPrice(@MessageBody() tokenPair: string) : Promise<string | undefined>
-    {
-        console.log(`MESSAGE_GET_LATEST_PRICE: ${tokenPair}`)
-
-        return await this.priceCoreService.getLatestPrice(tokenPair)
-    }
-
-    @SubscribeMessage(MESSAGE_GET_LATEST_TIME)
-    async getLatestTime(@MessageBody() tokenPair: string) : Promise<number | undefined>
-    {
-        console.log(`MESSAGE_GET_LATEST_TIME: ${tokenPair}`)
-
-        return await this.priceCoreService.getLatestTime(tokenPair)
-    }
-
-    @SubscribeMessage(MESSAGE_GET_TIMEFRAME)
-    async getTimeframe(@MessageBody() message: string) : Promise<PriceKlineModel[]>
-    {
-        console.log(`MESSAGE_GET_LATEST_TIME: ${message}`)
-
-        const { tokenPair, startDate, endDate, interval } = JSON.parse(message)
-
-        return await this.priceCoreService.getTimeframe(tokenPair, startDate, endDate, interval)
-    }
 }
