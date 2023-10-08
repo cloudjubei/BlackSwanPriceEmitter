@@ -39,16 +39,15 @@ export class PriceMineBinanceService
         return PriceMineBinanceService.INTERVALS[interval] * multiplier
     }
 
-    async getMostRecentKline(symbol: string, interval: string) : Promise<PriceKlineModel>
+    async getMostRecentKlines(symbol: string, interval: string, limit: number = 1) : Promise<PriceKlineModel[]>
     {
         const params = {
             symbol,
             interval,
-            limit: 1
+            limit
         }
         const response = await axios.get(PriceMineBinanceService.API_URL, { params })
-        const klines = this.processKlines(symbol, interval, response.data)
-        return klines[0]
+        return this.processKlines(symbol, interval, response.data)
     }
 
     async getTimeSeriesData(symbol: string, interval: string, startTime: number, endTime: number, limit: number = 1000) : Promise<PriceKlineModel[]>

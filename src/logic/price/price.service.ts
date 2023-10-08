@@ -33,8 +33,15 @@ export class PriceService implements OnApplicationBootstrap
 
         console.log(`PriceService setup ${Date.now()}`)
 
-        this.priceCoreService.setupCache(this.identityService.config.tokens, this.identityService.config.intervals)
-        this.indicatorsService.setupCache(this.identityService.config.tokens, this.identityService.config.intervals)
+        this.priceCoreService.setupCache(this.identityService.config.tokens, this.identityService.config.intervals, 201)
+        this.indicatorsService.setupCache(this.identityService.config.tokens, this.identityService.config.intervals, 201)
+
+        for(const tokenPair of this.identityService.config.tokens){
+            for(const interval of this.identityService.config.intervals){
+                const klines = await this.mineService.getMostRecentKlines(tokenPair, interval, 200)
+                this.priceCoreService.setupCacheValues(tokenPair, interval, klines)
+            }
+        }
 
         this.hasSetup = true
 
@@ -46,8 +53,7 @@ export class PriceService implements OnApplicationBootstrap
     {
         if (!this.hasSetup) { return }
 
-        const tokens = this.identityService.config.tokens
-        for(const tokenPair of tokens){
+        for(const tokenPair of this.identityService.config.tokens){
             for(const interval of this.identityService.config.intervals){
                 await this.updateKline(tokenPair, interval)
             }
@@ -56,7 +62,8 @@ export class PriceService implements OnApplicationBootstrap
 
     private async updateKline(tokenPair: string, interval: string)
     {
-        const kline = await this.mineService.getMostRecentKline(tokenPair, interval)
+        const klines = await this.mineService.getMostRecentKlines(tokenPair, interval)
+        const kline = klines[0]
         this.priceCoreService.storeInCache(kline)
         if (interval === '1s') {
             await this.wsPriceService.sendUpdate(tokenPair, kline.price_close)

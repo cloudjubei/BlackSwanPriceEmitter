@@ -6,10 +6,11 @@ import TokenPriceTimeModel from 'src/models/price/TokenPriceTimeModel.dto'
 export class PriceCoreService
 {
     private cache : { [key:string] : { [interval:string] : PriceKlineModel[] }} = {}
-    private cacheSize = 201
+    private cacheSize = 1000
 
-    setupCache(tokens: string[], intervals: string[])
+    setupCache(tokens: string[], intervals: string[], cacheSize: number)
     {
+        this.cacheSize = cacheSize
         for(const token of tokens){
             this.cache[token] = {}
             for(const interval of intervals){
@@ -17,12 +18,21 @@ export class PriceCoreService
             }
         }
     }
+    setupCacheValues(token: string, interval: string, klines: PriceKlineModel[])
+    {
+        this.cache[token][interval] = klines.reverse()
+    }
 
     storeInCache(kline: PriceKlineModel)
     {
-        this.cache[kline.tokenPair][kline.interval] = [kline, ...this.cache[kline.tokenPair][kline.interval]]
-        if (this.cache[kline.tokenPair][kline.interval].length > this.cacheSize){
-            this.cache[kline.tokenPair][kline.interval].pop()
+        const latest = this.getLatest(kline.tokenPair, kline.interval)
+        if (latest.timestamp_open < kline.timestamp_open){
+            this.cache[kline.tokenPair][kline.interval] = [kline, ...this.cache[kline.tokenPair][kline.interval]]
+            if (this.cache[kline.tokenPair][kline.interval].length > this.cacheSize){
+                this.cache[kline.tokenPair][kline.interval].pop()
+            }
+        }else{
+            this.cache[kline.tokenPair][kline.interval][0] = kline
         }
     }
 
