@@ -3,8 +3,8 @@ import {
     SubscribeMessage
   } from '@nestjs/websockets'
 import { COMMON_GATEWAY } from '../websockets.gateway'
-import { IdentityService } from 'src/logic/identity/identity.service'
-import ConfigModel from 'src/models/ConfigModel.dto'
+import { IdentityService } from 'logic/identity/identity.service'
+import ConfigModel from 'models/ConfigModel.dto'
   
 export const IDENTITY_PREFIX ='identity_'
 export const MESSAGE_GET_CONFIG = IDENTITY_PREFIX + 'config'

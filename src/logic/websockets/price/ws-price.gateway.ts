@@ -4,9 +4,9 @@ import {
     MessageBody
   } from '@nestjs/websockets'
 import { COMMON_GATEWAY } from '../websockets.gateway'
-import { PriceCoreService } from 'src/logic/price/core/price-core.service'
-import TokenPriceTimeModel from 'src/models/price/TokenPriceTimeModel.dto'
-import PriceKlineModel from 'src/models/price/PriceKlineModel.dto'
+import { PriceCoreService } from 'logic/price/core/price-core.service'
+import PriceModel from 'commons/models/price/PriceModel.dto'
+import PriceKlineModel from 'commons/models/price/PriceKlineModel.dto'
   
 export const PRICE_PREFIX ='price_'
 export const MESSAGE_GET_LATEST = PRICE_PREFIX + 'latest'
@@ -21,7 +21,7 @@ export class WSPriceGateway
     ) {}
 
     @SubscribeMessage(MESSAGE_GET_LATEST)
-    async getLatest(@MessageBody() tokenPair: string) : Promise<TokenPriceTimeModel | undefined>
+    async getLatest(@MessageBody() tokenPair: string) : Promise<PriceModel | undefined>
     {
         // console.log(`MESSAGE_GET_LATEST: ${tokenPair}`)
 

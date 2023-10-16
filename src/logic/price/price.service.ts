@@ -66,7 +66,7 @@ export class PriceService implements OnApplicationBootstrap
         const kline = klines[0]
         this.priceCoreService.storeInCache(kline)
         if (interval === '1s') {
-            await this.wsPriceService.sendUpdate(tokenPair, kline.price_close)
+            await this.wsPriceService.sendUpdate(tokenPair, kline.price)
         }
         await this.wsPriceService.sendKlineUpdate(tokenPair, interval, kline)
 

@@ -1,8 +1,8 @@
 import { Controller, Get, Param } from '@nestjs/common'
 import { ApiTags } from "@nestjs/swagger"
 import { PriceCoreService } from './price-core.service'
-import PriceKlineModel from 'src/models/price/PriceKlineModel.dto'
-import TokenPriceTimeModel from 'src/models/price/TokenPriceTimeModel.dto'
+import PriceKlineModel from 'commons/models/price/PriceKlineModel.dto'
+import PriceModel from 'commons/models/price/PriceModel.dto'
 
 @ApiTags("price")
 @Controller("price")
@@ -11,7 +11,7 @@ export class PriceCoreController
     constructor(private readonly priceCoreService: PriceCoreService) {}
 
     @Get('latest/:tokenPair')
-    async getLatest(@Param('tokenPair') tokenPair: string) : Promise<TokenPriceTimeModel>
+    async getLatest(@Param('tokenPair') tokenPair: string) : Promise<PriceModel>
     {
         return await this.priceCoreService.getLatestPrice(tokenPair)
     }

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common"
-import { IndicatorsCache } from "src/models/cache/IndicatorsCache"
-import TokenIndicatorsModel from "src/models/indicators/TokenIndicatorsModel.dto"
-import PriceKlineModel from "src/models/price/PriceKlineModel.dto"
+import IndicatorsCache from "commons/models/cache/IndicatorsCache"
+import TokenIndicatorsModel from "commons/models/indicators/TokenIndicatorsModel.dto"
+import PriceKlineModel from "commons/models/price/PriceKlineModel.dto"
 
 @Injectable()
 export class IndicatorsService
@@ -15,8 +15,8 @@ export class IndicatorsService
 
     storeInCache(tokenPair: string, interval: string, allKlines: PriceKlineModel[])
     {
-        const timestamp = allKlines[0].timestamp_open
-        const prices = allKlines.map(p => parseFloat(p.price_close)).reverse()
+        const timestamp = allKlines[0].timestamp
+        const prices = allKlines.map(p => parseFloat(p.price)).reverse()
         const indicators = this.processPrice(tokenPair, interval, timestamp, prices, this.getAll(tokenPair, interval).reverse())
 
         this.cache.storeIndicators(indicators)

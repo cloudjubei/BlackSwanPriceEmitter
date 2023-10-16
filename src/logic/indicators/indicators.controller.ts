@@ -1,7 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common'
 import { ApiTags } from "@nestjs/swagger"
 import { IndicatorsService } from './inidicators.service'
-import TokenIndicatorsModel from 'src/models/indicators/TokenIndicatorsModel.dto'
+import TokenIndicatorsModel from 'commons/models/indicators/TokenIndicatorsModel.dto'
 
 @ApiTags("indicators")
 @Controller("indicators")

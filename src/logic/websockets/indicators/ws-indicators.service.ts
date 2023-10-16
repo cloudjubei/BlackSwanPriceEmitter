@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { WebsocketsService } from '../common/ws-common.service'
-import TokenIndicatorsModel from 'src/models/indicators/TokenIndicatorsModel.dto'
+import TokenIndicatorsModel from 'commons/models/indicators/TokenIndicatorsModel.dto'
 
 @Injectable()
 export class WSIndicatorsService

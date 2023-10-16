@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { WebsocketsService } from '../common/ws-common.service'
-import PriceKlineModel from 'src/models/price/PriceKlineModel.dto'
+import PriceKlineModel from 'commons/models/price/PriceKlineModel.dto'
 
 @Injectable()
 export class WSPriceService

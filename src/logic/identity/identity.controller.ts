@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common'
 import { ApiTags } from "@nestjs/swagger"
 import { IdentityService } from './identity.service'
-import ConfigModel from 'src/models/ConfigModel.dto'
+import ConfigModel from 'models/ConfigModel.dto'
 
 @ApiTags("identity")
 @Controller("identity")

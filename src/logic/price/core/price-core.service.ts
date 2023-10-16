@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
-import { PriceCache } from 'src/models/cache/PriceCache'
-import PriceKlineModel from 'src/models/price/PriceKlineModel.dto'
-import TokenPriceTimeModel from 'src/models/price/TokenPriceTimeModel.dto'
+import PriceKlineCache from 'commons/models/cache/PriceKlineCache'
+import PriceKlineModel from 'commons/models/price/PriceKlineModel.dto'
+import PriceModel from 'commons/models/price/PriceModel.dto'
 
 @Injectable()
 export class PriceCoreService
 {
-    private cache = new PriceCache()
+    private cache = new PriceKlineCache()
 
     setupCache(tokens: string[], intervals: string[], cacheSize: number)
     {
@@ -31,9 +31,9 @@ export class PriceCoreService
     {
         return this.cache.getLatest(tokenPair, interval)
     }
-    getLatestPrice(tokenPair: string) : TokenPriceTimeModel
+    getLatestPrice(tokenPair: string) : PriceModel
     {
         const kline = this.getLatest(tokenPair, '1s')
-        return new TokenPriceTimeModel(kline.tokenPair, kline.price_close, kline.timestamp_open)
+        return new PriceModel(kline.tokenPair, kline.interval, kline.price, kline.timestamp)
     }
 }

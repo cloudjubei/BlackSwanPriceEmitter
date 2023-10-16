@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common"
-import PriceKlineModel from "src/models/price/PriceKlineModel.dto"
 import axios from "axios"
-import TokenPriceTimeModel from "src/models/price/TokenPriceTimeModel.dto"
+import PriceKlineModel from "commons/models/price/PriceKlineModel.dto"
+import PriceModel from "commons/models/price/PriceModel.dto"
 
 @Injectable()
 export class PriceMineBinanceService
@@ -21,7 +21,7 @@ export class PriceMineBinanceService
     }
     // 1s, 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
 
-    async getPrice(symbol: string) : Promise<TokenPriceTimeModel>
+    async getPrice(symbol: string) : Promise<PriceModel>
     {
         const params = {
             symbol
@@ -64,13 +64,14 @@ export class PriceMineBinanceService
         return klines
     }
 
-    private processTicker(json: any) : TokenPriceTimeModel
+    private processTicker(json: any) : PriceModel
     {
         return {
             'tokenPair': json.symbol,
             'price': json.lastPrice,
+            'interval': '1s',
             'timestamp': json.closeTime
-        } as TokenPriceTimeModel
+        } as PriceModel
     }
 
     private processKlines(tokenPair: string, interval: string, json: any) : PriceKlineModel[]
@@ -80,11 +81,11 @@ export class PriceMineBinanceService
             klines.push({
                 tokenPair,
                 interval,
-                timestamp_open: parseFloat(vals[0]),
+                timestamp: parseFloat(vals[0]),
                 price_open: vals[1],
                 price_high: vals[2],
                 price_low: vals[3],
-                price_close: vals[4],
+                price: vals[4],
                 volume: vals[5],
                 timestamp_close: parseFloat(vals[6]),
                 asset_volume_quote: vals[7],

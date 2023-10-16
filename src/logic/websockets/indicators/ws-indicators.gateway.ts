@@ -4,8 +4,8 @@ import {
     MessageBody
   } from '@nestjs/websockets'
 import { COMMON_GATEWAY } from '../websockets.gateway'
-import { IndicatorsService } from 'src/logic/indicators/inidicators.service'
-import TokenIndicatorsModel from 'src/models/indicators/TokenIndicatorsModel.dto'
+import { IndicatorsService } from 'logic/indicators/inidicators.service'
+import TokenIndicatorsModel from 'commons/models/indicators/TokenIndicatorsModel.dto'
   
 export const INDICATORS_PREFIX ='indicators_'
 export const MESSAGE_GET_LATEST = INDICATORS_PREFIX + 'latest'
