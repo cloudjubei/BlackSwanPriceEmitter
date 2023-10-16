@@ -1,12 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger"
+import { Timestamp } from "../swagger.consts"
 
 export default class PriceKlineModel
 {
     @ApiProperty() tokenPair: string
     @ApiProperty() interval: string
 
-    @ApiProperty() timestamp_open: string = "0"
-    @ApiProperty() timestamp_close: string = "0"
+    @ApiProperty(Timestamp) timestamp_open: number = 0
+    @ApiProperty(Timestamp) timestamp_close: number = 0
     @ApiProperty() price_open: string = "0"
     @ApiProperty() price_close: string = "0"
     @ApiProperty() price_low: string = "0"

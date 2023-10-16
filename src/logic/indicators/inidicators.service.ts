@@ -1,49 +1,38 @@
 import { Injectable } from "@nestjs/common"
+import { IndicatorsCache } from "src/models/cache/IndicatorsCache"
 import TokenIndicatorsModel from "src/models/indicators/TokenIndicatorsModel.dto"
 import PriceKlineModel from "src/models/price/PriceKlineModel.dto"
 
 @Injectable()
 export class IndicatorsService
 {
-    private cache : { [key:string] : { [interval:string] : TokenIndicatorsModel[] }} = {}
-    private cacheSize = 1000
+    private cache = new IndicatorsCache()
 
     setupCache(tokens: string[], intervals: string[], cacheSize: number)
     {
-        this.cacheSize = cacheSize
-        for(const token of tokens){
-            this.cache[token] = {}
-            for(const interval of intervals){
-                this.cache[token][interval] = []
-            }
-        }
+        this.cache.setup(tokens, intervals, cacheSize)
     }
 
     storeInCache(tokenPair: string, interval: string, allKlines: PriceKlineModel[])
     {
-        const indicators = this.processPrice(tokenPair, interval, allKlines.map(p => parseFloat(p.price_close)).reverse(), this.getAll(tokenPair, interval).reverse())
+        const timestamp = allKlines[0].timestamp_open
+        const prices = allKlines.map(p => parseFloat(p.price_close)).reverse()
+        const indicators = this.processPrice(tokenPair, interval, timestamp, prices, this.getAll(tokenPair, interval).reverse())
 
-        this.cache[tokenPair][interval] = [indicators, ...this.cache[tokenPair][interval]]
-        if (this.cache[tokenPair][interval].length > this.cacheSize){
-            this.cache[tokenPair][interval].pop()
-        }
+        this.cache.storeIndicators(indicators)
     }
 
     getAll(tokenPair: string, interval: string) : TokenIndicatorsModel[]
     {
-        return this.cache[tokenPair][interval] ?? []
+        return this.cache.getAll(tokenPair, interval)
     }
 
     getLatest(tokenPair: string, interval: string = '1s') : TokenIndicatorsModel
     {
-        const indicators = this.cache[tokenPair][interval]
-        if (indicators.length > 0){
-            return indicators[0]
-        }
-        return new TokenIndicatorsModel(tokenPair, '1s', '0', Date.now(), '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')
+        return this.cache.getLatest(tokenPair, interval)
     }
 
-    private processPrice(tokenPair: string, interval: string, prices: number[], indicators: TokenIndicatorsModel[]) : TokenIndicatorsModel
+    private processPrice(tokenPair: string, interval: string, timestamp: number, prices: number[], indicators: TokenIndicatorsModel[]) : TokenIndicatorsModel
     {
         const rsi9 = this.calculateRSI(prices, 9)
         const rsi11 = this.calculateRSI(prices, 11)
@@ -63,14 +52,21 @@ export class IndicatorsService
         const ema200 = this.calculateEMA(prices, 200)
 
         const macdLine = this.calculateMACDLine(ema12, ema26)
-        const macdSignal9 = this.calculateMACDSignal(macdLine, indicators.map(i => i.macdLine), 9)
+        const macdSignal9 = this.calculateMACDSignal(macdLine, indicators.map(i => i.indicators["macdLine"]), 9)
         const macd9 = '' + (parseFloat(macdLine) - parseFloat(macdSignal9)).toFixed(8)
 
         const bollinger20 = this.calculateBollinger(prices, 20)
 
-        return new TokenIndicatorsModel(tokenPair, interval, '' + prices[0], Date.now(), rsi9, rsi11, rsi14, rsi20, rsi30, williams14, williams30, ema12, ema20, ema26, ema50, ema200, macdLine, macdSignal9, macd9, bollinger20.middle, bollinger20.sd, bollinger20.high, bollinger20.low)
+        return new TokenIndicatorsModel(tokenPair, interval, '' + prices[0], timestamp, {
+            rsi9, rsi11, rsi14, rsi20, rsi30, 
+            williams14, williams30, 
+            ema12, ema20, ema26, ema50, ema200, 
+            macdLine, macdSignal9, macd9, 
+            bollinger20Mid: bollinger20.middle, bollinger20SD: bollinger20.sd, bollinger20High: bollinger20.high, bollinger20Low: bollinger20.low
+        })
     }
 
+    // The RSI measures the ratio of up-moves to down-moves, and normalises the calculation so that the index is expressed in a range of 0-100. It was originally developed by J.Welles Wilder. If the RSI is 70 or greater, the instrument is assumed to be overbought (a situation whereby prices have risen more than market expectations). An RSI of 30 or less is taken as a signal that the instrument may be oversold (a situation in which prices have fallen more than the market expectations).
     private calculateRSI(prices: number[], period: number) : string
     {
         if (prices.length < period) { return '0' }
@@ -99,6 +95,7 @@ export class IndicatorsService
         return '' + rsi.toFixed(8)
     }
 
+    // Williams %R, also known as the Williams Percent Range, is a type of momentum indicator that moves between 0 and -100. When the indicator is between -20 and zero the price is overbought, or near the high of its recent price range. When the indicator is between -80 and -100 the price is oversold, or far from the high of its recent range.
     private calculateWilliams(prices: number[], period: number) : string
     {
         if (prices.length < period) { return '0' }
@@ -129,6 +126,8 @@ export class IndicatorsService
         return sma
     }
 
+    // EMA - Traders are bullish when the 20 EMA crosses above the 50 EMA or remains above the 50 EMA, and only turn bearish if the 20 EMA falls below the 50 EMA.
+    // The 12- and 26-day exponential moving averages (EMAs) are often the most quoted and analyzed short-term averages. The 12- and 26-day are used to create indicators like the moving average convergence divergence (MACD) and the percentage price oscillator (PPO). In general, the 50- and 200-day EMAs are used as indicators for long-term trends. When a stock price crosses its 200-day
     private calculateEMA(prices: number[], period: number) : string
     {
         if (prices.length < period) { return '0' }

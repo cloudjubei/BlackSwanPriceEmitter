@@ -21,7 +21,7 @@ export class WSIndicatorsGateway
     @SubscribeMessage(MESSAGE_GET_LATEST)
     async getLatest(@MessageBody() tokenPair: string) : Promise<TokenIndicatorsModel | undefined>
     {
-        console.log(`MESSAGE_GET_LATEST INDICATORS: ${tokenPair}`)
+        // console.log(`MESSAGE_GET_LATEST INDICATORS: ${tokenPair}`)
 
         return await this.indicatorsService.getLatest(tokenPair)
     }
@@ -29,7 +29,7 @@ export class WSIndicatorsGateway
     @SubscribeMessage(MESSAGE_GET_LATEST_INTERVAL)
     async getLatestInterval(@MessageBody() message: string) : Promise<TokenIndicatorsModel | undefined>
     {
-        console.log(`MESSAGE_GET_LATEST_INTERVAL: ${message}`)
+        // console.log(`MESSAGE_GET_LATEST_INTERVAL: ${message}`)
         const { tokenPair, interval } = JSON.parse(message)
 
         return await this.indicatorsService.getLatest(tokenPair, interval)
