@@ -6,6 +6,7 @@ import { AppController } from './app.controller'
 import { PriceModule } from './logic/price/price.module'
 import { WebsocketsModule } from './logic/websockets/websockets.module'
 import { IdentityModule } from './logic/identity/identity.module'
+import { PriceHistoricalModule } from './logic/price/historical/price-historical.module'
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import { IdentityModule } from './logic/identity/identity.module'
 
         IdentityModule,
         PriceModule,
+        PriceHistoricalModule,
         
         ScheduleModule.forRoot()
     ],

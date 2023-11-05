@@ -40,6 +40,7 @@ export class PriceService implements OnApplicationBootstrap
             for(const interval of this.identityService.config.intervals){
                 const klines = await this.mineService.getMostRecentKlines(tokenPair, interval, 200)
                 this.priceCoreService.setupCacheValues(tokenPair, interval, klines)
+                this.indicatorsService.storeInCache(tokenPair, interval, klines)
             }
         }
 
@@ -62,7 +63,7 @@ export class PriceService implements OnApplicationBootstrap
 
     private async updateKline(tokenPair: string, interval: string)
     {
-        const klines = await this.mineService.getMostRecentKlines(tokenPair, interval)
+        const klines = await this.mineService.getMostRecentKlines(tokenPair, interval, 1)
         const kline = klines[0]
         this.priceCoreService.storeInCache(kline)
         if (interval === '1s') {

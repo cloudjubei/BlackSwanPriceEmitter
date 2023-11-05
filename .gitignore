@@ -39,3 +39,6 @@ lerna-debug.log*
 
 # local env files
 .env*.local
+
+# local data files
+/raw

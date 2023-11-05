@@ -15,7 +15,7 @@
     "indicators": [
         "rsi9", "rsi11", "rsi14", "rsi20", "rsi30", 
         "williams14", "williams30", 
-        "ema12", "ema20", "ema26", "ema50", "ema200", 
+        "ema12", "ema20", "ema26", "ema30", 
         "macdLine", "macdSignal9", "macd9", 
         "bollinger20Mid", "bollinger20SD", "bollinger20High", "bollinger20Low"
     ]

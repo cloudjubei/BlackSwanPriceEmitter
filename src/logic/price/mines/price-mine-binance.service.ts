@@ -17,9 +17,15 @@ export class PriceMineBinanceService
         "5m": PriceMineBinanceService.INTERVAL_1S * 60 * 5,
         "15m": PriceMineBinanceService.INTERVAL_1S * 60 * 15,
         "1h": PriceMineBinanceService.INTERVAL_1S * 60 * 60,
-        "1d": PriceMineBinanceService.INTERVAL_1S * 60 * 60 * 24
+        "4h": PriceMineBinanceService.INTERVAL_1S * 60 * 60 * 4,
+        "1d": PriceMineBinanceService.INTERVAL_1S * 60 * 60 * 24,
+        "1w": PriceMineBinanceService.INTERVAL_1S * 60 * 60 * 24 * 7,
     }
-    // 1s, 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
+
+    getIntervalTime(interval: string, multiplier: number = 1) : number
+    {
+        return PriceMineBinanceService.INTERVALS[interval] * multiplier
+    }
 
     async getPrice(symbol: string) : Promise<PriceModel>
     {
@@ -34,11 +40,6 @@ export class PriceMineBinanceService
         }
     }
 
-    getIntervalTime(interval: string, multiplier: number = 1) : number
-    {
-        return PriceMineBinanceService.INTERVALS[interval] * multiplier
-    }
-
     async getMostRecentKlines(symbol: string, interval: string, limit: number = 1) : Promise<PriceKlineModel[]>
     {
         const params = {
@@ -50,8 +51,29 @@ export class PriceMineBinanceService
         return this.processKlines(symbol, interval, response.data)
     }
 
-    async getTimeSeriesData(symbol: string, interval: string, startTime: number, endTime: number, limit: number = 1000) : Promise<PriceKlineModel[]>
+    async getFullTimeSeriesData(symbol: string, interval: string, startTime: number, endTime: number) : Promise<PriceKlineModel[]>
     {
+        let klines : PriceKlineModel[] = []
+        let latestStartTime = startTime
+        let lastTimestamp = latestStartTime
+        while(true){
+            const newKlines = await this.getTimeSeriesData(symbol, interval, latestStartTime, endTime)
+            if (newKlines.length == 0) break
+
+            klines = klines.concat(newKlines)
+
+            const latestTimestamp = newKlines[newKlines.length-1].timestamp_close
+            latestStartTime = latestTimestamp + 1
+            if (latestTimestamp == endTime || latestStartTime == lastTimestamp){
+                break
+            }
+            lastTimestamp = latestStartTime
+        }
+        return klines
+    }
+    async getTimeSeriesData(symbol: string, interval: string, startTime: number, endTime: number, resultLimit: number = 1000) : Promise<PriceKlineModel[]>
+    {
+        const limit = Math.min(resultLimit, 1000)
         const params = {
             symbol,
             interval,
