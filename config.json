@@ -2,16 +2,20 @@
     "type" : "price",
     "identifier": "binance_price",
     "tokens" : [
-        "BTCUSDT",
         "BTCFDUSD",
-        "XRPUSDT",
-        "XRPFDUSD"
+        "XRPFDUSD",
+        "ETHFDUSD",
+        "DOTFDUSD",
+        "DOGEFDUSD",
+        "SOLFDUSD",
+        "LTCFDUSD"
     ],
     "intervals" : [
         "1s",
         "1m",
         "5m",
         "15m",
+        "1h",
         "1d"
     ],
     "indicators": [
@@ -19,6 +23,8 @@
         "williams14", "williams30", 
         "ema12", "ema20", "ema26", "ema30", 
         "macdLine", "macdSignal9", "macd9", 
-        "bollinger20Mid", "bollinger20SD", "bollinger20High", "bollinger20Low"
+        "bollinger20Mid", "bollinger20SD", "bollinger20High", "bollinger20Low",
+        "dump1", "dump3", "dump5", "dump10",
+        "pump1", "pump3", "pump5", "pump10"
     ]
 }

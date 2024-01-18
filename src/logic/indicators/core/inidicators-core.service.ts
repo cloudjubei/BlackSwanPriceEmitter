@@ -43,45 +43,57 @@ export class IndicatorsCoreService
 
         const bollinger20 = this.calculateBollinger(prices, 20)
 
+        //dumps
+        const dump1 = this.calculateDump(prices, 1)
+        const dump3 = this.calculateDump(prices, 3)
+        const dump5 = this.calculateDump(prices, 5)
+        const dump10 = this.calculateDump(prices, 10)
+        //pumps
+        const pump1 = this.calculatePump(prices, 1)
+        const pump3 = this.calculatePump(prices, 3)
+        const pump5 = this.calculatePump(prices, 5)
+        const pump10 = this.calculatePump(prices, 10)
+
         return new TokenIndicatorsModel(tokenPair, interval, '' + prices[0], timestamp, {
             rsi9, rsi11, rsi14, rsi20, rsi30, 
             williams14, williams30, 
             ema12, ema20, ema26, ema30, 
             macdLine, macdSignal9, macd9, 
-            bollinger20Mid: bollinger20.middle, bollinger20SD: bollinger20.sd, bollinger20High: bollinger20.high, bollinger20Low: bollinger20.low
+            bollinger20Mid: bollinger20.middle, bollinger20SD: bollinger20.sd, bollinger20High: bollinger20.high, bollinger20Low: bollinger20.low,
+            dump1, dump3, dump5, dump10,
+            pump1, pump3, pump5, pump10
         })
     }
 
-        // The RSI measures the ratio of up-moves to down-moves, and normalises the calculation so that the index is expressed in a range of 0-100. It was originally developed by J.Welles Wilder. If the RSI is 70 or greater, the instrument is assumed to be overbought (a situation whereby prices have risen more than market expectations). An RSI of 30 or less is taken as a signal that the instrument may be oversold (a situation in which prices have fallen more than the market expectations).
-        // The RSI measures the ratio of up-moves to down-moves, and normalises the calculation so that the index is expressed in a range of 0-100. It was originally developed by J.Welles Wilder. If the RSI is 70 or greater, the instrument is assumed to be overbought (a situation whereby prices have risen more than market expectations). An RSI of 30 or less is taken as a signal that the instrument may be oversold (a situation in which prices have fallen more than the market expectations).
-        private calculateRSI(prices: number[], period: number) : string
-        {
-            if (prices.length < period) { return '0' }
-            const periodPrices = [...prices.slice(-period-1, prices.length)]
-            
-            const priceChanges: number[] = [];
-            for (let i = 0; i < periodPrices.length-1; i++) {
-                priceChanges.push(periodPrices[i+1] - periodPrices[i])
-            }
-
-            let averageGain = 0
-            let averageLoss = 0
-            for (let i = 0; i < period; i++) {
-                const change = priceChanges[i];
-                if (change > 0) {
-                    averageGain += change
-                } else {
-                    averageLoss -= change
-                }
-            }
-            averageGain /= period
-            averageLoss /= period
-            
-            const rs = averageGain / averageLoss
-            const rsi = 100 - (100 / (1 + rs))
-            
-            return '' + rsi.toFixed(8)
+    // The RSI measures the ratio of up-moves to down-moves, and normalises the calculation so that the index is expressed in a range of 0-100. It was originally developed by J.Welles Wilder. If the RSI is 70 or greater, the instrument is assumed to be overbought (a situation whereby prices have risen more than market expectations). An RSI of 30 or less is taken as a signal that the instrument may be oversold (a situation in which prices have fallen more than the market expectations).
+    private calculateRSI(prices: number[], period: number) : string
+    {
+        if (prices.length < period) { return '0' }
+        const periodPrices = [...prices.slice(-period-1, prices.length)]
+        
+        const priceChanges: number[] = [];
+        for (let i = 0; i < periodPrices.length-1; i++) {
+            priceChanges.push(periodPrices[i+1] - periodPrices[i])
         }
+
+        let averageGain = 0
+        let averageLoss = 0
+        for (let i = 0; i < period; i++) {
+            const change = priceChanges[i];
+            if (change > 0) {
+                averageGain += change
+            } else {
+                averageLoss -= change
+            }
+        }
+        averageGain /= period
+        averageLoss /= period
+        
+        const rs = averageGain / averageLoss
+        const rsi = 100 - (100 / (1 + rs))
+        
+        return '' + rsi.toFixed(8)
+    }
     
 
     // Williams %R, also known as the Williams Percent Range, is a type of momentum indicator that moves between 0 and -100. When the indicator is between -20 and zero the price is overbought, or near the high of its recent price range. When the indicator is between -80 and -100 the price is oversold, or far from the high of its recent range.
@@ -174,5 +186,33 @@ export class IndicatorsCoreService
         const squaredDifferences = periodPrices.map((price) => Math.pow(price - average, 2))
         const variance = squaredDifferences.reduce((acc, diff) => acc + diff, 0) / period
         return Math.sqrt(variance)
+    }
+
+    private calculateDump(prices: number[], period: number) : string
+    {
+        if (prices.length < period + 1) { return '0' }
+
+        const currentPrice = prices[-1]
+        const periodPrices = [...prices.slice(-period-1), period]
+
+        const maxPrice = periodPrices.reduce((acc, price) => price > acc ? price : acc, 0)
+        
+        const currentDifference = (maxPrice - currentPrice)/maxPrice
+
+        return '' + currentDifference
+    }
+
+    private calculatePump(prices: number[], period: number) : string
+    {
+        if (prices.length < period + 1) { return '0' }
+
+        const currentPrice = prices[-1]
+        const periodPrices = [...prices.slice(-period-1), period]
+
+        const minPrice = periodPrices.reduce((acc, price) => price < acc ? price : acc, Number.MAX_VALUE)
+
+        const currentDifference = (currentPrice - minPrice)/minPrice
+
+        return '' + currentDifference
     }
 }
