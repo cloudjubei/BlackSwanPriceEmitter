@@ -214,7 +214,6 @@ export class IndicatorsCoreService
         const minPrice = periodPrices.reduce((acc, price) => price < acc ? price : acc, Number.MAX_VALUE)
 
         const currentDifference = (currentPrice - minPrice)/minPrice
-        console.log("calculatePump period: " + period + " minPrice: " + minPrice + " currentPrice: " + currentPrice + " | currentDifference = " + currentDifference)
 
         return '' + currentDifference
     }
