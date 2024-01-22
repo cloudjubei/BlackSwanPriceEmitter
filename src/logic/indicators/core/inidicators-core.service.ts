@@ -12,13 +12,15 @@ export class IndicatorsCoreService
             const windowPrices = i > 0 ? klines.slice(0, -i) : klines
             const timestamp = windowPrices[windowPrices.length-1].timestamp
             const prices = windowPrices.map(p => parseFloat(p.price))
-            const indicator = this.processPrice(tokenPair, interval, timestamp, prices, [])
+            const pricesHigh = windowPrices.map(p => parseFloat(p.price_high))
+            const pricesLow = windowPrices.map(p => parseFloat(p.price_low))
+            const indicator = this.processPrice(tokenPair, interval, timestamp, prices, pricesHigh, pricesLow, [])
             indicators.push(indicator)
         }
         return indicators.reverse()
     }
 
-    processPrice(tokenPair: string, interval: string, timestamp: number, prices: number[], indicators: TokenIndicatorsModel[]) : TokenIndicatorsModel
+    processPrice(tokenPair: string, interval: string, timestamp: number, prices: number[], pricesHigh: number[], pricesLow: number[], indicators: TokenIndicatorsModel[]) : TokenIndicatorsModel
     {
         const rsi9 = this.calculateRSI(prices, 9)
         const rsi11 = this.calculateRSI(prices, 11)
@@ -44,15 +46,15 @@ export class IndicatorsCoreService
         const bollinger20 = this.calculateBollinger(prices, 20)
 
         //dumps
-        const dump1 = this.calculateDump(prices, 1)
-        const dump3 = this.calculateDump(prices, 3)
-        const dump5 = this.calculateDump(prices, 5)
-        const dump10 = this.calculateDump(prices, 10)
+        const dump1 = this.calculateDump(prices, pricesHigh, 1)
+        const dump3 = this.calculateDump(prices, pricesHigh, 3)
+        const dump5 = this.calculateDump(prices, pricesHigh, 5)
+        const dump10 = this.calculateDump(prices, pricesHigh, 10)
         //pumps
-        const pump1 = this.calculatePump(prices, 1)
-        const pump3 = this.calculatePump(prices, 3)
-        const pump5 = this.calculatePump(prices, 5)
-        const pump10 = this.calculatePump(prices, 10)
+        const pump1 = this.calculatePump(prices, pricesLow, 1)
+        const pump3 = this.calculatePump(prices, pricesLow, 3)
+        const pump5 = this.calculatePump(prices, pricesLow, 5)
+        const pump10 = this.calculatePump(prices, pricesLow, 10)
 
         return new TokenIndicatorsModel(tokenPair, interval, '' + prices[0], timestamp, {
             rsi9, rsi11, rsi14, rsi20, rsi30, 
@@ -188,12 +190,12 @@ export class IndicatorsCoreService
         return Math.sqrt(variance)
     }
 
-    private calculateDump(prices: number[], period: number) : string
+    private calculateDump(prices: number[], pricesHigh: number[], period: number) : string
     {
         if (prices.length < period + 1) { return '0' }
 
-        const currentPrice = prices[-1]
-        const periodPrices = [...prices.slice(-period-1), period]
+        const currentPrice = prices[prices.length - 1]
+        const periodPrices = [...pricesHigh.slice(-period-1, pricesHigh.length-1)]
 
         const maxPrice = periodPrices.reduce((acc, price) => price > acc ? price : acc, 0)
         
@@ -202,16 +204,17 @@ export class IndicatorsCoreService
         return '' + currentDifference
     }
 
-    private calculatePump(prices: number[], period: number) : string
+    private calculatePump(prices: number[], pricesLow: number[], period: number) : string
     {
         if (prices.length < period + 1) { return '0' }
 
-        const currentPrice = prices[-1]
-        const periodPrices = [...prices.slice(-period-1), period]
+        const currentPrice = prices[prices.length - 1]
+        const periodPrices = [...pricesLow.slice(-period-1, pricesLow.length-1)]
 
         const minPrice = periodPrices.reduce((acc, price) => price < acc ? price : acc, Number.MAX_VALUE)
 
         const currentDifference = (currentPrice - minPrice)/minPrice
+        console.log("calculatePump period: " + period + " minPrice: " + minPrice + " currentPrice: " + currentPrice + " | currentDifference = " + currentDifference)
 
         return '' + currentDifference
     }
