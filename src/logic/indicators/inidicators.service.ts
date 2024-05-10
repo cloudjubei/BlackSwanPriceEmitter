@@ -24,7 +24,9 @@ export class IndicatorsService
         const prices = allKlines.map(p => parseFloat(p.price)).reverse()
         const pricesHigh = allKlines.map(p => parseFloat(p.price_high)).reverse()
         const pricesLow = allKlines.map(p => parseFloat(p.price_low)).reverse()
-        const indicators = this.indicatorsCoreService.processPrice(tokenPair, interval, timestamp, prices, pricesHigh, pricesLow, this.getAll(tokenPair, interval).reverse())
+        const pricesCandleHeight = allKlines.map(p => parseFloat(p.price) - parseFloat(p.price_open)).reverse()
+        const volumes = allKlines.map(p => parseFloat(p.volume)).reverse()
+        const indicators = this.indicatorsCoreService.processPrice(tokenPair, interval, timestamp, prices, pricesHigh, pricesLow, pricesCandleHeight, volumes, this.getAll(tokenPair, interval).reverse())
 
         this.cache.storeIndicators(indicators)
     }

@@ -3,28 +3,38 @@
     "identifier": "binance_price",
     "tokens" : [
         "BTCFDUSD",
-        "XRPFDUSD",
-        "ETHFDUSD",
-        "DOTFDUSD",
-        "DOGEFDUSD",
-        "SOLFDUSD",
-        "LTCFDUSD"
+        "BTCUSDT",
+        "BTCTUSD",
+        "BTCUSDC",
+        "ETHUSDT",
+        "ETHUSDC",
+        "XRPUSDT",
+        "DOTUSDT",
+        "DOGEUSDT",
+        "SOLUSDT",
+        "LTCUSDT"
     ],
     "intervals" : [
         "1s",
         "1m",
         "5m",
         "15m",
-        "1h",
-        "1d"
+        "1h"
     ],
     "indicators": [
+        "atr5", "atr8", "atr13", "atr30",
         "rsi9", "rsi11", "rsi14", "rsi20", "rsi30", 
         "williams14", "williams30", 
+        "wlti",
         "ema12", "ema20", "ema26", "ema30", 
+        "sar001_01", "sar002_02", "sar005_03",
         "macdLine", "macdSignal9", "macd9", 
         "bollinger20Mid", "bollinger20SD", "bollinger20High", "bollinger20Low",
+        "kallman5", "kallman14", "kallman20", "kallman30",
+        "lwti8", "lwti13", "lwti30",
+        "donchianChannels14", "donchianChannels20", "donchianChannels96",
         "dump1", "dump3", "dump5", "dump10",
-        "pump1", "pump3", "pump5", "pump10"
+        "pump1", "pump3", "pump5", "pump10",
+        "lwStrategyUp", "lwStrategyDown"
     ]
 }
