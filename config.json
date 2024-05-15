@@ -2,24 +2,18 @@
     "type" : "price",
     "identifier": "binance_price",
     "tokens" : [
-        "BTCFDUSD",
         "BTCUSDT",
         "BTCTUSD",
         "BTCUSDC",
         "ETHUSDT",
         "ETHUSDC",
-        "XRPUSDT",
-        "DOTUSDT",
-        "DOGEUSDT",
-        "SOLUSDT",
-        "LTCUSDT"
+        "XRPUSDT"
     ],
     "intervals" : [
         "1s",
         "1m",
         "5m",
-        "15m",
-        "1h"
+        "15m"
     ],
     "indicators": [
         "atr5", "atr8", "atr13", "atr30",
