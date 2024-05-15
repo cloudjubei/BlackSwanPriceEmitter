@@ -2,6 +2,7 @@
     "type" : "price",
     "identifier": "binance_price",
     "tokens" : [
+        "BTCFDUSD",
         "BTCUSDT",
         "BTCTUSD",
         "BTCUSDC",
