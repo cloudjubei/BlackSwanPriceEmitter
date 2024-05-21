@@ -4,11 +4,8 @@
     "tokens" : [
         "BTCFDUSD",
         "BTCUSDT",
-        "BTCTUSD",
-        "BTCUSDC",
         "ETHUSDT",
-        "ETHUSDC",
-        "XRPUSDT"
+        "ETHFDUSD"
     ],
     "intervals" : [
         "1s",
