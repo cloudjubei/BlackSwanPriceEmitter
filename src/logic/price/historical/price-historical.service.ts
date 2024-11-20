@@ -96,7 +96,7 @@ export class PriceHistoricalService
         const pricesPrev = await this.getPrices(tokenPair, interval, prevYear, prevMonth)
         const prices = await this.getPrices(tokenPair, interval, year, month)
 
-        const indicators = await this.indicatorsCoreService.processPrices(tokenPair, interval, prices.concat(pricesPrev), prices.length)
+        const indicators = await this.indicatorsCoreService.processPrices(tokenPair, interval, pricesPrev.concat(prices), prices.length)
 
         const priceIndicators = prices.map((price, index) => { return { ...price, indicators: indicators[index].indicators } as PriceKlineWithIndicatorsModel })
 
@@ -105,7 +105,7 @@ export class PriceHistoricalService
 
     private async getFile(tokenPair: string, interval: string, year: number, month: number) : Promise<string | undefined>
     {
-        const filename = "./raw/indicators/" + tokenPair + "/" + interval + "/" + year + "-" + month + ".json"
+        const filename = "./raw/indicators/" + tokenPair + "/" + interval + "/" + tokenPair + "-" + interval + "-" + year + "-" + month + ".json"
 
         if (StorageUtils.checkIfFileOrDirectoryExists(filename)){
             const file = StorageUtils.getFile(filename)
@@ -115,8 +115,17 @@ export class PriceHistoricalService
     private saveFile(tokenPair: string, interval: string, year: number, month: number, indicators: PriceKlineWithIndicatorsModel[])
     {
         const path = "./raw/indicators/" + tokenPair + "/" + interval
-        const filename = year + "-" + month + ".json"
+        const filename = tokenPair + "-" + interval + "-" + year + "-" + month + ".json"
 
-        StorageUtils.createOrWriteToFile(path, filename, JSON.stringify(indicators))
+        const smallIndicators = []
+        
+        for(const indicator of indicators){
+            const smallIndicator = { ...indicator }
+            delete smallIndicator.tokenPair
+            delete smallIndicator.interval
+            smallIndicators.push(smallIndicator)
+        }
+
+        StorageUtils.createOrWriteToFile(path, filename, JSON.stringify(smallIndicators))
     }
 }
